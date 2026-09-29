@@ -6,6 +6,23 @@
 
 除了充电上限，我还做了电量、健康度、温度、适配器功率、充满时间和断电续航的展示。续航数字是估计值，不会跟着每一次瞬时功率波动来回跳。
 
+## 实际界面
+
+下面是我自己 Mac 上运行时的截图，不是设计稿。左边是菜单栏面板，右边是充电设置。
+
+<table>
+  <tr>
+    <td align="center" width="36%">
+      <img src="docs/images/menu-panel.png" width="300" alt="VoltWarden 菜单栏面板，显示 75% 电量、140 W 适配器及实时功率"><br>
+      <sub>菜单栏面板 · 电量、适配器和功率流向</sub>
+    </td>
+    <td align="center" width="64%">
+      <img src="docs/images/charging-settings.png" width="580" alt="VoltWarden 设置窗口，显示充电管理和 75% 日常充电上限"><br>
+      <sub>充电设置 · 日常上限与临时充满</sub>
+    </td>
+  </tr>
+</table>
+
 ## 先说适用范围
 
 **我目前在自己的 Apple 芯片 MacBook、macOS 27 上使用和验证。** 当前提供的是 Apple 芯片版，不是 Intel 版。
