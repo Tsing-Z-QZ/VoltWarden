@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+    <key>CFBundleIdentifier</key><string>com.srimanachanta.stasis.helper</string>
+    <key>CFBundleName</key><string>helper</string>
+    <key>CFBundleExecutable</key><string>helper</string>
+    <key>CFBundlePackageType</key><string>XPC!</string>
+    <key>CFBundleVersion</key><string>2026092402</string>
+    <key>LSMinimumSystemVersion</key><string>14.8</string>
+    <key>XPCService</key><dict><key>ServiceType</key><string>Application</string></dict>
+</dict></plist>
