@@ -534,7 +534,11 @@ struct DashboardMenuView: View {
 
                 systemPower:
                     viewModel
-                    .systemPower
+                    .systemPower,
+
+                isPanelVisible:
+                    viewModel
+                    .isMenuVisible
             )
         }
         .padding(14)

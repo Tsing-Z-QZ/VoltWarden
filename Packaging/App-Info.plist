@@ -8,8 +8,8 @@
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>CFBundleIconName</key><string>AppIcon</string>
-    <key>CFBundleShortVersionString</key><string>1.0</string>
-    <key>CFBundleVersion</key><string>2026092904</string>
+    <key>CFBundleShortVersionString</key><string>1.6</string>
+    <key>CFBundleVersion</key><string>2026092905</string>
     <key>CFBundleDevelopmentRegion</key><string>en</string>
     <key>LSMinimumSystemVersion</key><string>14.8</string>
     <key>LSUIElement</key><true/>

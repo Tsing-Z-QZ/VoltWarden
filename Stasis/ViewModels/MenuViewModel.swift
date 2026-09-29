@@ -14,9 +14,6 @@ class MenuViewModel {
     private let chargeManager:
         ChargeManager
 
-    private let bootTimestamp:
-        Date?
-
     // MARK: - Display Text
 
     var batteryPercentageText:
@@ -35,9 +32,6 @@ class MenuViewModel {
     var timeRemainingHelp: String = "按当前真实剩余电量和最近几次整机功耗估算，与充电上限无关。"
     private var runtimeEstimator = UnpluggedRuntimeEstimator()
     private var chargeTimeEstimator = ChargeTimeEstimator()
-
-    var uptimeText:
-        String = "0m"
 
     var batteryModeText:
         String =
@@ -98,6 +92,8 @@ class MenuViewModel {
         Bool = false
 
     var adapterSpecificationText: String?
+
+    var isMenuVisible = false
 
     // MARK: - Charge Manager State
 
@@ -190,9 +186,6 @@ class MenuViewModel {
     private var settingsObservation:
         Task<Void, Never>?
 
-    private var uptimeTask:
-        Task<Void, Never>?
-
     private var powerModeObservation:
         Task<Void, Never>?
 
@@ -214,10 +207,6 @@ class MenuViewModel {
 
         self.chargeManager =
             chargeManager
-
-        self.bootTimestamp =
-            SystemService
-            .bootTimestamp()
 
         startObservingMetrics()
         startObservingSettings()
@@ -411,8 +400,9 @@ class MenuViewModel {
             ? metrics.hardwareBatteryPercentage
             : metrics.batteryPercentage
 
-        displayPercentage =
-            percentage
+        if displayPercentage != percentage {
+            displayPercentage = percentage
+        }
 
         batteryPercentageText =
             "\(percentage)%"
@@ -438,18 +428,21 @@ class MenuViewModel {
         systemPower =
             flow.systemPower
 
-        powerSource =
-            flow.powerSource
+        if powerSource != flow.powerSource {
+            powerSource = flow.powerSource
+        }
 
-        chargingMode =
-            flow.chargingMode
+        if chargingMode != flow.chargingMode {
+            chargingMode = flow.chargingMode
+        }
 
         isCharging =
             flow.chargingMode
             == .charging
 
-        adapterConnected =
-            adapter.adapterConnected
+        if adapterConnected != adapter.adapterConnected {
+            adapterConnected = adapter.adapterConnected
+        }
 
         // MARK: Power Source Text
 
@@ -509,10 +502,6 @@ class MenuViewModel {
         adapterSpecificationText = adapter.adapterConnected
             ? adapter.negotiatedWatts.map { "\($0) W" } : nil
         updateTimeRemainingText(metrics: metrics, flow: flow)
-
-        // MARK: Uptime
-
-        updateUptimeText()
 
         // MARK: Temperature
 
@@ -643,79 +632,6 @@ class MenuViewModel {
         )
     }
 
-    // MARK: - Uptime
-
-    private func updateUptimeText() {
-
-        guard let bootTimestamp else {
-
-            uptimeText =
-                String(
-                    localized:
-                        "Unknown"
-                )
-
-            return
-        }
-
-        let elapsed =
-            Duration.seconds(
-                Date()
-                    .timeIntervalSince(
-                        bootTimestamp
-                    )
-            )
-
-        uptimeText =
-            elapsed.formatted(
-                .units(
-                    allowed: [
-                        .days,
-                        .hours,
-                        .minutes
-                    ],
-
-                    width:
-                        .condensedAbbreviated,
-
-                    zeroValueUnits:
-                        .hide
-                )
-            )
-    }
-
-    private func startUptimeTimer() {
-
-        guard uptimeTask == nil else {
-            return
-        }
-
-        uptimeTask =
-            Task { [weak self] in
-
-                while !Task.isCancelled {
-
-                    try?
-                        await Task.sleep(
-                            for:
-                                .seconds(2)
-                        )
-
-                    guard !Task.isCancelled else { return }
-                    self?.refreshPresentation()
-                }
-            }
-    }
-
-    private func stopUptimeTimer() {
-
-        uptimeTask?
-            .cancel()
-
-        uptimeTask =
-            nil
-    }
-
     // MARK: - Menu
 
     private func refreshPresentation() {
@@ -724,9 +640,9 @@ class MenuViewModel {
 
     func menuWillOpen() {
 
-        refreshPresentation()
+        isMenuVisible = true
 
-        startUptimeTimer()
+        refreshPresentation()
 
         batteryService
             .enableFastPolling()
@@ -734,7 +650,7 @@ class MenuViewModel {
 
     func menuDidClose() {
 
-        stopUptimeTimer()
+        isMenuVisible = false
 
         batteryService
             .disableFastPolling()
@@ -760,9 +676,6 @@ class MenuViewModel {
                     .cancel()
 
                 settingsObservation?
-                    .cancel()
-
-                uptimeTask?
                     .cancel()
 
                 powerModeObservation?

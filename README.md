@@ -4,6 +4,8 @@
 
 我平时经常把 MacBook 插着电用，也想一眼看清现在到底是在充电、保持，还是由电池供电。系统自带的充电上限只给 80%–100%，我想用的却是 75% 这类更灵活的目标，于是做了 VoltWarden：一个放在菜单栏里的电池工具，设置好后就让它安静待着。
 
+v1.6 主要把“安静待着”这件事做好了：菜单关闭时不再让功率流动画白白刷新，也减少了后台稳定状态下的采样和日志写入。点开菜单时，功率动画仍按原来的 30 帧显示，数据也会切回快速刷新。
+
 除了充电上限，我还做了电量、健康度、温度、适配器功率、充满时间和断电续航的展示。续航数字是估计值，不会跟着每一次瞬时功率波动来回跳。
 
 ## 实际界面
@@ -36,7 +38,7 @@
 
 ## 快速上手：第一次安装
 
-> v1.0 安装包已经发布：[点这里下载 VoltWarden-v1.0-arm64.zip](https://github.com/Tsing-Z-QZ/VoltWarden/releases/download/v1.0/VoltWarden-v1.0-arm64.zip)。页面自动给的「Source code (zip)」是源码，双击不能当 App 用。
+> v1.6 安装包已经发布：[点这里下载 VoltWarden-v1.6-arm64.zip](https://github.com/Tsing-Z-QZ/VoltWarden/releases/download/v1.6/VoltWarden-v1.6-arm64.zip)。页面自动给的「Source code (zip)」是源码，双击不能当 App 用。
 
 ### 步骤零：确认你的 Mac
 
@@ -45,7 +47,7 @@
 ### 步骤一：下载并放进「应用程序」
 
 1. 打开 [Releases](https://github.com/Tsing-Z-QZ/VoltWarden/releases)，点进最新版本，展开 Assets。
-2. 下载名字形如 `VoltWarden-v1.0-arm64.zip` 的文件。不要下载页面自动生成的 Source code。
+2. 下载名字形如 `VoltWarden-v1.6-arm64.zip` 的文件。不要下载页面自动生成的 Source code。
 3. 在访达打开「下载」文件夹，双击 ZIP 解压，得到 VoltWarden.app。
 4. 把 VoltWarden.app 拖到访达侧边栏的「应用程序」。如果以前装过，先从菜单栏退出旧版，再替换；不要直接在 ZIP 或下载文件夹里运行。
 
@@ -82,6 +84,8 @@ VoltWarden lets me set a charging limit for my MacBook, so it does not have to c
 
 The panel also shows battery level, health, temperature, power adapter rating, estimated time to charge, and estimated runtime on battery. Runtime is an estimate, not a number that jumps every time power draw changes for a second.
 
+In v1.6, I focused on idle power use. The power-flow animation stops when the menu is closed, and stable background readings and diagnostic logging happen less often. Open the menu and the original 30 fps animation and fast readings return.
+
 ### What it looks like
 
 These are screenshots from my own Mac, not mockups.
@@ -101,7 +105,7 @@ These are screenshots from my own Mac, not mockups.
 
 ### Compatibility first
 
-I currently use and test VoltWarden on my own Apple silicon MacBook running macOS 27. The v1.0 download is built for Apple silicon only.
+I currently use and test VoltWarden on my own Apple silicon MacBook running macOS 27. The v1.6 download is built for Apple silicon only.
 
 - macOS 26.4 and later: macOS itself offers an 80%–100% charge limit. VoltWarden uses an additional control path for 50%–79%. I have not verified that a 75% limit works reliably on every Mac running macOS 26.4–26.x.
 - macOS 26.3 and earlier: whether charging actually stops depends more heavily on the specific Mac's hardware. Being able to open the app does not mean its charging limit will work.
@@ -112,7 +116,7 @@ If you only need an 80%–100% limit on macOS 26.4 or later, you may want to try
 
 ### Download and install
 
-Download the app from the [v1.0 release page](https://github.com/Tsing-Z-QZ/VoltWarden/releases/tag/v1.0). Choose `VoltWarden-v1.0-arm64.zip` under Assets. The automatically generated “Source code” ZIP is source code, not an installable app.
+Download the app from the [v1.6 release page](https://github.com/Tsing-Z-QZ/VoltWarden/releases/tag/v1.6). Choose `VoltWarden-v1.6-arm64.zip` under Assets. The automatically generated “Source code” ZIP is source code, not an installable app.
 
 1. Check your Mac: open the Apple menu, choose About This Mac, and confirm it has an M-series chip.
 2. Open the ZIP from your Downloads folder. It will unpack to `VoltWarden.app`.

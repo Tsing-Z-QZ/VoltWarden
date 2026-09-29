@@ -3,6 +3,20 @@ import Observation
 import os.log
 import smc_power
 
+enum PowerPollingCadence {
+    static func interval(fast: Bool, adapterConnected: Bool,
+                         isCharging: Bool, batteryPower: Double) -> Duration {
+        if fast { return .milliseconds(500) }
+        // Keep the existing control-response cadence while charge is moving.
+        if adapterConnected && (isCharging || batteryPower > 0.5 || batteryPower < -2) {
+            return .seconds(2)
+        }
+        // IOKit still reports power-source changes immediately. A held or
+        // unplugged battery does not need an SMC request every two seconds.
+        return .seconds(10)
+    }
+}
+
 nonisolated enum XPCError: LocalizedError {
     case helperUnavailable
     case commandFailed(String)
@@ -125,6 +139,8 @@ class BatteryService {
 
     private var smcPollTask:
         Task<Void, Never>?
+
+    private var nextPollSleepTask: Task<Void, Never>?
 
     private var delayedPollTask:
         Task<Void, Never>?
@@ -263,6 +279,7 @@ class BatteryService {
 
         isFastPolling =
             true
+        nextPollSleepTask?.cancel()
 
         logger.info(
             "Enabling fast SMC polling"
@@ -273,6 +290,7 @@ class BatteryService {
 
         isFastPolling =
             false
+        nextPollSleepTask?.cancel()
 
         logger.info(
             "Disabling fast SMC polling"
@@ -315,24 +333,19 @@ class BatteryService {
                     await self
                         .pollSMCOnce()
 
-                    // 菜单打开：
-                    // 500ms 一次
-                    //
-                    // 菜单关闭：
-                    // 2 秒一次
+                    let interval = PowerPollingCadence.interval(
+                        fast: self.isFastPolling,
+                        adapterConnected: self.controlState.adapterConnected,
+                        isCharging: self.metrics.isCharging,
+                        batteryPower: self.metrics.batteryPower
+                    )
 
-                    let interval:
-                        Duration =
-
-                        self.isFastPolling
-                        ? .milliseconds(500)
-                        : .seconds(2)
-
-                    try?
-                        await Task.sleep(
-                            for:
-                                interval
-                        )
+                    let sleepTask = Task<Void, Never> {
+                        _ = try? await Task.sleep(for: interval)
+                    }
+                    self.nextPollSleepTask = sleepTask
+                    await sleepTask.value
+                    self.nextPollSleepTask = nil
 
                     guard
                         !Task.isCancelled
@@ -476,7 +489,9 @@ class BatteryService {
         if updatedAdapter != adapterMetrics { adapterMetrics = updatedAdapter }
         powerSampleDate = Date()
         updateControlState(from: updatedBattery, adapter: updatedAdapter)
-        if Date().timeIntervalSince(lastSampleLog) >= 1 {
+        let sampleLogInterval: TimeInterval = updatedAdapter.adapterConnected &&
+            (updatedBattery.isCharging || updatedBattery.batteryPower < -2) ? 5 : 30
+        if Date().timeIntervalSince(lastSampleLog) >= sampleLogInterval {
             lastSampleLog = Date()
             ControlDiagnostics.shared.record("SAMPLE", "soc=\(updatedBattery.batteryPercentage) hardwareSoc=\(updatedBattery.hardwareBatteryPercentage) connected=\(updatedAdapter.adapterConnected) charging=\(updatedBattery.isCharging) batteryW=\(String(format: "%.2f", updatedBattery.batteryPower)) currentA=\(String(format: "%.3f", updatedBattery.batteryCurrent)) adapterW=\(String(format: "%.2f", updatedAdapter.adapterPower)) temperature=\(updatedBattery.batteryTemperature)")
         }
@@ -815,6 +830,9 @@ class BatteryService {
 
         smcPollTask?
             .cancel()
+
+        nextPollSleepTask?.cancel()
+        nextPollSleepTask = nil
 
         smcPollTask =
             nil

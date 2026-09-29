@@ -3,6 +3,22 @@ import XCTest
 
 @MainActor
 final class PowerPresentationTests: XCTestCase {
+    func testPowerPollingCadenceKeepsActiveControlResponsive() {
+        XCTAssertEqual(PowerPollingCadence.interval(fast: true, adapterConnected: true,
+            isCharging: false, batteryPower: 0), .milliseconds(500))
+        XCTAssertEqual(PowerPollingCadence.interval(fast: false, adapterConnected: true,
+            isCharging: true, batteryPower: 0), .seconds(2))
+        XCTAssertEqual(PowerPollingCadence.interval(fast: false, adapterConnected: true,
+            isCharging: false, batteryPower: -20), .seconds(2))
+    }
+
+    func testPowerPollingCadenceRestsWhenHoldingOrUnplugged() {
+        XCTAssertEqual(PowerPollingCadence.interval(fast: false, adapterConnected: true,
+            isCharging: false, batteryPower: 0), .seconds(10))
+        XCTAssertEqual(PowerPollingCadence.interval(fast: false, adapterConnected: false,
+            isCharging: false, batteryPower: -20), .seconds(10))
+    }
+
     func testHelperRefreshRequiresKnownUnpluggedStateAndNewBuild() {
         XCTAssertTrue(ChargingHelperRefreshPolicy.shouldRefresh(
             manageCharging: true, hasObservedPowerSource: true, adapterConnected: false,

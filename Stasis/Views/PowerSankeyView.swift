@@ -8,6 +8,7 @@ struct PowerSankeyView: View {
     let batteryPower: Double
     let adapterPower: Double
     let systemPower: Double
+    var isPanelVisible = true
 
     private enum Layout {
         static let nodeWidth: CGFloat = 82
@@ -52,7 +53,7 @@ struct PowerSankeyView: View {
 
     @ViewBuilder
     private var animatedFlows: some View {
-        if reduceMotion {
+        if reduceMotion || !isPanelVisible {
             Canvas { context, size in
                 drawFlows(context: context, size: size, dashPhase: 0)
             }
