@@ -4,7 +4,6 @@
 
 我平时经常把 MacBook 插着电用，也想一眼看清现在到底是在充电、保持，还是由电池供电。系统自带的充电上限只给 80%–100%，我想用的却是 75% 这类更灵活的目标，于是做了 VoltWarden：一个放在菜单栏里的电池工具，设置好后就让它安静待着。
 
-v1.6 主要把“安静待着”这件事做好了：菜单关闭时不再让功率流动画白白刷新，也减少了后台稳定状态下的采样和日志写入。点开菜单时，功率动画仍按原来的 30 帧显示，数据也会切回快速刷新。
 
 除了充电上限，我还做了电量、健康度、温度、适配器功率、充满时间和断电续航的展示。续航数字是估计值，不会跟着每一次瞬时功率波动来回跳。
 
@@ -83,8 +82,6 @@ v1.6 主要把“安静待着”这件事做好了：菜单关闭时不再让功
 VoltWarden lets me set a charging limit for my MacBook, so it does not have to charge to 100% every time. I built it because I often use my MacBook plugged in and wanted a simple way to see whether it is charging, holding its level, or running on battery. It lives in the menu bar and stays out of the way once it is set up.
 
 The panel also shows battery level, health, temperature, power adapter rating, estimated time to charge, and estimated runtime on battery. Runtime is an estimate, not a number that jumps every time power draw changes for a second.
-
-In v1.6, I focused on idle power use. The power-flow animation stops when the menu is closed, and stable background readings and diagnostic logging happen less often. Open the menu and the original 30 fps animation and fast readings return.
 
 ### What it looks like
 
