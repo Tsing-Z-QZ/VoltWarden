@@ -1,38 +1,46 @@
 # VoltWarden
 
-一款给 Apple Silicon MacBook 用的菜单栏电池工具：查看电池状态，并设置日常充电上限。它是开源项目 [Stasis](https://github.com/srimanachanta/Stasis) 的非官方中文改版，不是 Apple 或原作者发布的版本。
+给 MacBook 设一个自己想要的充电目标，顺手看看电量、功率、温度和电池状态。它待在菜单栏，不会一直占着 Dock。
 
-> v1.0 是免费实验版。它没有 Apple Developer ID 签名与公证，也还没在一台全新安装的 Mac 上完成充电助手验收。请不要把界面显示的目标值当成硬件已执行的证明。
+> **目前仓库只提供源码，还没有发布可下载的 App 安装包。** 等 [Releases](https://github.com/Tsing-Z-QZ/VoltWarden/releases) 出现明确标为 `VoltWarden-v1.0-arm64.zip` 的附件后，再按下面的教程安装。GitHub 自动生成的「Source code」ZIP 是源码，不是软件。
 
-## 下载与安装
+## 你的 Mac 适合用吗？
 
-目前仓库只提供源码，**安装包尚未发布**。下列步骤适用于将来明确标注为实验版的 Release；GitHub 自动提供的源码 ZIP 不能直接运行。
+先点屏幕左上角 ** → 关于本机**，看「芯片」和 macOS 版本。
 
-1. 从本仓库的 **Releases** 下载 `VoltWarden-v1.0-arm64.zip`。GitHub 自动提供的 “Source code” 是源码，不是安装包。
-2. 解压后将 `VoltWarden.app` 拖进「应用程序」，从那里打开。它是菜单栏程序，不会常驻 Dock。
-3. 因为此免费版未经 Apple 公证，macOS 可能阻止首次打开。若你确认下载来源可信，可在首次尝试打开后，前往「系统设置 → 隐私与安全性」选择「仍要打开」。不要全局关闭 Gatekeeper，也不要执行网上流传的清除隔离属性命令。
-4. 打开设置，启用「管理充电」。macOS 要求管理员批准后台充电助手时，前往「系统设置 → 通用 → 登录项与扩展」允许 VoltWarden，回到软件重新检查。
-5. 设置充电上限，松开滑块后提交。界面中的 75% 是目标；若助手未获批准或失效，实际限充可能不会执行。遇到异常请先拔电，再检查后台项目状态。
+| 你的设备 | 目前判断 |
+| --- | --- |
+| Apple 芯片 + macOS 27 | 目前只在开发者的一台 MacBook 上跑通；其他机型还没实测。 |
+| Apple 芯片 + macOS 26.4 或更新的 26.x | **可能能打开，但 75% 等低于 80% 的上限未验证。** 苹果系统自带的充电上限只提供 80%–100%；本软件的 50%–79% 需要额外的非公开控制路径。 |
+| Apple 芯片 + macOS 26.0–26.3 | 没有苹果官方的手动充电上限；能否限充取决于机器是否有可用的旧式硬件控制，**不建议当作可靠限充工具使用**。 |
+| Apple 芯片 + macOS 14.8–25 | 软件声明的最低版本是 14.8，但原生限充路径不可用，只能尝试机型提供的旧式硬件控制；目前没有实机验收。 |
+| macOS 14.7 或更早、Intel Mac | **当前安装包不支持。** Intel 需要另外制作并测试 x86_64 版本，不能拿 Apple 芯片版直接运行。 |
 
-目前仅在开发者的一台 Apple Silicon MacBook、macOS 27.0 上验证。程序声明最低 macOS 14.8，但旧系统、其他机型与全新安装流程尚未验证。软件使用系统私有充电接口，macOS 更新可能影响功能。本版暂沿用上游的内部 bundle ID；**不要与原版 Stasis 同时安装或运行**，否则设置和后台助手可能冲突。
+为什么对旧系统这么保守？软件要真正停充，不能只在界面写一个“75%”。在 macOS 26.4 起，苹果提供 [80%–100% 的系统充电上限](https://support.apple.com/en-au/102338)；本软件的 75% 还要用私有接口与设备特定的硬件能力。系统版本、Mac 型号一变，这些能力就可能不同。**能打开 App 不代表限充已经生效。** 如果你只需要 80%–100%，优先考虑 macOS 自带设置。
 
-## 能做什么
+## 下载与安装：一步一步来
 
-- 查看电量、健康度、温度、适配器与功率流向。
-- 设置 50%–100% 充电上限，临时充满后恢复日常目标。
-- 显示稳定的断电续航估计与充至目标的预计时间。
-- 合盖、拔电和重新接电时按当前电源状态调整充电控制。
+以下步骤适用于将来发布的 **免费实验版安装包**；目前还没有 ZIP 附件，请先不要下载「Source code」冒充 App。
 
-估计时间仅供参考，不参与充电控制。把目标从 75% 改为 50%，不会瞬间减少电池的真实电量。
+1. 先按上表确认自己是 **Apple 芯片 MacBook**。不知道芯片型号，就点 ** → 关于本机**；看到 M 系列芯片才继续。
+2. 打开本仓库的 [Releases 页面](https://github.com/Tsing-Z-QZ/VoltWarden/releases)，进入最新版本，展开 **Assets**。找名字形如 `VoltWarden-v1.0-arm64.zip` 的附件。不要点页面自动列出的 **Source code (zip)** 或 **Source code (tar.gz)**。
+3. 在访达打开「下载」文件夹，双击下载的 ZIP。解压后应该看到 **VoltWarden.app**。把它拖进访达侧边栏的「应用程序」，**不要直接从 ZIP 或“下载”文件夹里运行**。如果你之前装过旧版，先从菜单栏退出旧版再替换。
+4. 从「应用程序」双击 **VoltWarden**。它是菜单栏 App：打开后请看屏幕顶部右侧的电池小图标，Dock 没有常驻图标是正常的。「应用程序」里的青绿色图标和菜单栏电池图形不是同一个图标。
+5. 免费实验版没有 Apple Developer ID 公证。若 macOS 提示无法验证开发者，先完成首次打开尝试，再到 **系统设置 → 隐私与安全性** 找该 App 的 **“仍要打开”**，按系统提示确认。只有确认下载来自本仓库时才这样做；**不要关闭整台 Mac 的安全检查，也不要运行网上的清除隔离属性命令**。[苹果的说明](https://support.apple.com/en-gb/102445)
+6. 点击菜单栏电池图标 → 设置 → 打开「管理充电」。如果系统要求允许后台项目，到 **系统设置 → 通用 → 登录项与扩展 → 允许在后台运行**，找到 VoltWarden 或充电助手并打开。管理员密码请只输入在 macOS 自己的提示框里，不要发给任何人。回到 App，必要时退出并重新打开。
+7. 拖动充电上限滑块，**松手后**才会提交目标。第一次先观察系统电池状态：界面写着 75% 只是“想要的目标”，不是硬件已经执行的证明。如果仍持续充过目标，先拔下充电线，检查后台助手是否获准运行；不要把软件当成电池安全保护装置。
 
-## 开发与许可证
+遇到问题可以在 [Issues](https://github.com/Tsing-Z-QZ/VoltWarden/issues) 里写 Mac 型号、macOS 版本、设定上限和实际电量；**不要上传序列号或未经检查的完整系统日志**。
 
-源码、测试、打包和发布方法见 [发布指南](docs/RELEASING.zh-CN.md)。构建需 Apple Silicon Mac 与当前 Xcode：
+## 它能做什么
 
-```bash
-swift test --scratch-path /tmp/StasisBuildTests
-SIGN_IDENTITY='Apple Development: 你的证书名称' \
-  bash scripts/package-app.sh /tmp/VoltWardenBuild /tmp/VoltWardenDist/VoltWarden.app
-```
+- 查看电量、健康度、温度、适配器规格和功率流向。
+- 设定日常充电目标，临时充满后恢复日常目标。
+- 给出比较稳定的断电续航估计、充至目标的预计时间。
+- 合盖、拔电和重新接电时按电源状态调整控制。
 
-本项目继承上游 Stasis 的 [GPL-3.0](LICENSE)；发布二进制时须同时提供对应版本的完整源码。保留 [Stasis](https://github.com/srimanachanta/Stasis)、[SMCKit](https://github.com/srimanachanta/SMCKit) 和 [Defaults](https://github.com/sindresorhus/Defaults) 的版权与许可说明。App 图标的平面图形在 `Packaging/IconSource/`，由 Apple Icon Composer 生成图标资源。
+时间只是估计，不参与充电控制。把目标从 75% 改成 50%，也不会让电池瞬间少掉 25%。
+
+## 想自己看代码？
+
+源码、测试和打包说明在 [发布指南](docs/RELEASING.zh-CN.md)。本项目采用 [GPL-3.0](LICENSE)；修改记录、原有代码和第三方依赖的来源见 [开源与版权说明](ATTRIBUTION.md)。图标的平面源文件在 `Packaging/IconSource/`，不是苹果官方图标。
