@@ -36,7 +36,7 @@
 
 ## 快速上手：第一次安装
 
-> **目前仓库已上传源码，安装包还没有放进 Releases。** 等 [Releases](https://github.com/Tsing-Z-QZ/VoltWarden/releases) 里出现 `VoltWarden-v1.0-arm64.zip` 后，再照下面做。页面自动给的「Source code (zip)」是源码，双击不能当 App 用。
+> **v1.0 安装包已经发布：**[点这里下载 VoltWarden-v1.0-arm64.zip](https://github.com/Tsing-Z-QZ/VoltWarden/releases/download/v1.0/VoltWarden-v1.0-arm64.zip)。页面自动给的「Source code (zip)」是源码，双击不能当 App 用。
 
 ### 步骤零：确认你的 Mac
 
