@@ -1,0 +1,35 @@
+name: Publish v1.0
+
+on:
+  push:
+    paths:
+      - .github/workflows/publish-v1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble and verify signed app archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > VoltWarden-v1.0-arm64.zip
+          for sha in 0f9144f8322ecce5dd8ac7fd18b3392b14286bcd 1564899a4b8d305c79993647f4545aa910c9c758 aec5a9d981c005299fe82b024418a728f421b5e1 fcb6d2c71786fc48ba97cc2a6d41b428728e6516 12793c2f6e3e41d7f344913d8c742131bf580543; do
+            gh api "repos/${GITHUB_REPOSITORY}/git/blobs/${sha}" --jq '.content' | base64 --decode >> VoltWarden-v1.0-arm64.zip
+          done
+          echo "61eda8e2ad16c3090b86908d3071e426da874d5068048481167b64fab2192b02  VoltWarden-v1.0-arm64.zip" | sha256sum --check
+          sha256sum VoltWarden-v1.0-arm64.zip > VoltWarden-v1.0-arm64.sha256
+      - name: Create v1.0 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create v1.0 VoltWarden-v1.0-arm64.zip VoltWarden-v1.0-arm64.sha256 --title "VoltWarden v1.0" --notes-file docs/release-notes-v1.0.md --target "${GITHUB_SHA}"
